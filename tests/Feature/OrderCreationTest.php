@@ -19,8 +19,12 @@ class OrderCreationTest extends TestCase
             'total_cents' => 2500,
         ];
 
-        $this->postJson('/api/orders', $payload)->assertCreated();
-        $this->postJson('/api/orders', $payload)->assertCreated();
+        $firstResponse = $this->postJson('/api/orders', $payload);
+        $retryResponse = $this->postJson('/api/orders', $payload);
+
+        $firstResponse->assertCreated()->assertJsonPath('created', true);
+        $retryResponse->assertOk()->assertJsonPath('created', false);
+        $this->assertSame($firstResponse['data']['id'], $retryResponse['data']['id']);
 
         $this->assertDatabaseCount('orders', 1);
     }
