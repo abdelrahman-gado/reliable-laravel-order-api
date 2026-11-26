@@ -5,6 +5,7 @@ namespace App\Actions;
 use App\Enums\OrderStatusEnum;
 use App\Models\Order;
 use Illuminate\Support\Facades\DB;
+use App\Jobs\ProcessOrderJob;
 
 class CreateOrderAction
 {
@@ -16,7 +17,7 @@ class CreateOrderAction
     public function handle(array $data): Order
     {
         return DB::transaction(function () use ($data) {
-            return Order::firstOrCreate(
+            $order =  Order::firstOrCreate(
                 ['request_id' => $data['request_id']],
                 [
                     'customer_email' => $data['customer_email'],
@@ -24,6 +25,12 @@ class CreateOrderAction
                     'status' => OrderStatusEnum::PENDING
                 ]
             );
+
+            if ($order->wasRecentlyCreated) {
+                ProcessOrderJob::dispatch($order)->afterCommit();
+            }
+
+            return $order;
         }, attempts: 3);
     }
 }
