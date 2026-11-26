@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('request_id', length: 64)->index();
+            $table->string('request_id', length: 64)->unique();
             $table->string('customer_email');
             $table->unsignedInteger('total_cents');
             $table->string('status')->default('pending')->index();
