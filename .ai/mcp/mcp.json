@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "laravel-boost": {
+      "command": "/usr/bin/php",
+      "args": [
+        "/home/gado/my/my-repos/reliable-laravel-order-api/artisan",
+        "boost:mcp"
+      ]
+    }
+  }
+}
