@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @method static firstOrCreate(array $array, array $array1)
+ * @property mixed $id
  */
 #[Fillable([
     'request_id',

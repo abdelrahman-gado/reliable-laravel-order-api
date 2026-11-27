@@ -7,6 +7,7 @@ use App\Models\Order;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\Attributes\Tries;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 
 #[Tries(3)]
 class ProcessOrderJob implements ShouldQueue
@@ -20,11 +21,21 @@ class ProcessOrderJob implements ShouldQueue
     {
     }
 
+    public function middleware(): array
+    {
+        return [
+            (new WithoutOverlapping((string) $this->order->id))
+                ->releaseAfter(5)
+                ->expireAfter(30),
+        ];
+    }
+
     /**
      * Execute the job.
      */
     public function handle(): void
     {
+//        sleep(3); // just for debugging and showing
         $this->order->update([
             'status' => OrderStatusEnum::PROCESSED
         ]);
